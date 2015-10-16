@@ -2,8 +2,7 @@ library(shiny)
 
 
 
-shinyUI(navbarPage("BGC",
-                   
+shinyUI(navbarPage("ecoscope",
                    #title=div(img(src="logo.png")),
                    
                    
