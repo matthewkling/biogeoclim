@@ -34,9 +34,7 @@ shinyServer(function(input, output, session) {
       #}, deleteFile = F)
       
       # tab panel text
-      output$biogeo_title <- renderText({paste0("What lives near ", input$location, ", and where else does it live?")})
-      output$bioclim_title <- renderText({paste0("What climates do ", input$location, " habitats occupy, locally and regionally?
-                                                 Locally, is climate change introducing climates novel to these habitats?")})
+      output$biogeo_title <- renderText({paste0("What lives near ", input$location, ", and where else does it live? What climates are these habitat types known to tolerate, and how does local climate change stack up?")})
       output$geoclim_title <- renderText({paste0("With climate change, how are climates analogous to ", input$location, "\'s migrating across space?")})
       
       
@@ -269,7 +267,7 @@ shinyServer(function(input, output, session) {
       
       output$geoclim <- renderPlot({
             
-            require(ggmap)
+            #require(ggmap)
             basemap <- ggmap(get_map(input$location, maptype=input$basemap, 
                                      color="bw", zoom=input$zoom))
             
@@ -297,7 +295,7 @@ shinyServer(function(input, output, session) {
                   mutate(bio12=log10(bio12)) %>%
                   group_by(year) %>%
                   summarize_each(funs(mean), bio1, bio12)
-            pc_local <- predict(pc, f_local[,c("bio1", "bio12")])
+            pc_local <- predict(pc, f_local[f_local$year==input$reference_year, c("bio1", "bio12")])
             
             
             library(FNN)
@@ -306,7 +304,7 @@ shinyServer(function(input, output, session) {
             fy <- split(f, f$year)
             pcy <- split(as.data.frame(pc$x), f$year)
             nny <- lapply(pcy, function(x){
-                  get.knnx(data=as.matrix(x), query=matrix(pc_local[2,], ncol=2), k=k)
+                  get.knnx(data=as.matrix(x), query=matrix(pc_local, ncol=2), k=k)
             })
             
             for(x in names(nny)){

@@ -13,7 +13,7 @@ shinyUI(navbarPage("BGC",
                                        ".shiny-output-error { visibility: hidden; }",
                                        ".shiny-output-error:before { visibility: hidden; }"
                             ),
-                            img(src="logo.png"),
+                            #img(src="logo.png"),
                             #imageOutput('logo', height="250px"),
                             textInput("location", "Location", "Googleable name (in lower 48)"),
                             br(),
@@ -39,8 +39,6 @@ shinyUI(navbarPage("BGC",
                                   
                                   mainPanel(
                                         plotOutput('biogeo', height="500px"),
-                                        h3(textOutput("bioclim_title")),
-                                        br(),
                                         plotOutput('bioclim', height="700px")
                                   )
                             )
@@ -57,7 +55,9 @@ shinyUI(navbarPage("BGC",
                                         sliderInput('zoom', 'Zoom', 
                                                     8, step=1, min=4, max=12),
                                         sliderInput('neighbors', 'Specificity', 
-                                                    .05, step=.01, min=.01, max=.25), 
+                                                    .05, step=.01, min=.01, max=.25),
+                                        selectInput("reference_year", "Reference year",
+                                                    c(1980, 2012, 2050), 2012),
                                         selectInput("basemap", "Basemap", 
                                                     c("terrain", "satellite", "roadmap"))
                                         
