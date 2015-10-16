@@ -1,0 +1,8 @@
+name: biogeoclim
+account: matthewkling
+server: shinyapps.io
+bundleId: 288212
+url: https://matthewkling.shinyapps.io/biogeoclim
+when: 1444878901.16091
+asMultiple: FALSE
+asStatic: FALSE
