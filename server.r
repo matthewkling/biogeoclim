@@ -1,24 +1,27 @@
 
 library(shiny)
 
+library(rgdal)
 library(raster)
-library(ecoclim)
+#library(ecoclim)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(ggmap)
 library(gridExtra)
 library(grid)
+# sampSurf
+
 
 # load data
-d <- readRDS("pixels.rds")
+d <- readRDS("data/pixels.rds")
 
 # veg metadata
-vmd <- read.csv("US_130EVT_02092015.csv", stringsAsFactors=F)
+vmd <- read.csv("data/US_130EVT_02092015.csv", stringsAsFactors=F)
 vmd <- tbl_df(vmd)
 valid_types <- unique(vmd$VALUE[!vmd$EVT_LF %in% c("Water", "Barren", "Developed", "Agriculture", "Sparse") &
                                       !vmd$EVT_PHYS %in% c("Developed", "Agricultural") &
-                                      !grepl("ntroduced|lantation", vmd$VALUE)])
+                                      !grepl("ntroduced|lantation", vmd$VALUE)]) #### not working #####
 vmd <- select(vmd, VALUE, CLASSNAME, EVT_ORDER, EVT_CLASS, EVT_SBCLS)
 names(vmd) <- tolower(names(vmd))
 names(vmd)[names(vmd)=="value"] <- "vegtype"
@@ -45,7 +48,7 @@ boundaries <- map_data("state")
 shinyServer(function(input, output, session) {
       
       output$logo <- renderImage({
-            list(src = "biogeoclim2.png",
+            list(src = "data/biogeoclim2.png",
                  contentType = 'image/png',
                  width = 200,
                  height = 200*486/421)
