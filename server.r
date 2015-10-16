@@ -3,14 +3,13 @@ library(shiny)
 
 library(rgdal)
 library(raster)
-#library(ecoclim)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(ggmap)
 library(gridExtra)
 library(grid)
-# sampSurf
+# sampSurf, sp, FNN
 
 
 # load data
@@ -48,7 +47,7 @@ boundaries <- map_data("state")
 shinyServer(function(input, output, session) {
       
       output$logo <- renderImage({
-            list(src = "data/biogeoclim2.png",
+            list(src = "data/logo.png",
                  contentType = 'image/png',
                  width = 200,
                  height = 200*486/421)
@@ -85,7 +84,7 @@ shinyServer(function(input, output, session) {
             s <- as.data.frame(d)
             coordinates(s) <- c("x", "y")
             projection(s) <- pll
-            s <- s[!is.na(over(s, circle()$spCircle)),]
+            s <- s[!is.na(sp::over(s, circle()$spCircle)),]
             s <- tbl_df(as.data.frame(s))
             types <- rev(sort(table(s$vegtype)))
             types <- as.integer(names(types))
