@@ -9,24 +9,14 @@ library(ggplot2)
 library(ggmap)
 library(gridExtra)
 library(grid)
+
+#install.packages(c("shiny", "rgdal", "raster", "dplyr", "tidyr", "ggplot2", "ggmap", "gridExtra", "grid", "sampSurf", "sp", "FNN"))
 # sampSurf, sp, FNN
 
 
 # load data
 d <- readRDS("data/pixels.rds")
-
-# veg metadata
-vmd <- read.csv("data/US_130EVT_02092015.csv", stringsAsFactors=F)
-vmd <- tbl_df(vmd)
-valid_types <- unique(vmd$VALUE[!vmd$EVT_LF %in% c("Water", "Barren", "Developed", "Agriculture", "Sparse") &
-                                      !vmd$EVT_PHYS %in% c("Developed", "Agricultural") &
-                                      !grepl("ntroduced|lantation", vmd$VALUE)]) #### not working #####
-vmd <- select(vmd, VALUE, CLASSNAME, EVT_ORDER, EVT_CLASS, EVT_SBCLS)
-names(vmd) <- tolower(names(vmd))
-names(vmd)[names(vmd)=="value"] <- "vegtype"
-
-d <- na.omit(full_join(d, vmd))
-
+valid_types <- readRDS("data/types.rds")
 
 # coordinate systems
 pll <- CRS("+proj=longlat +ellps=WGS84")
@@ -34,10 +24,6 @@ paea <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=
 
 # state boundaries
 boundaries <- map_data("state")
-
-
-
-
 
 
 #input <- list(location="Meeker Park, CO", comparison="horizontal", zoom=10, radius=25, prob=.9, basemap="terrain", radius_regional=150, neighbors=.05)
@@ -53,10 +39,12 @@ shinyServer(function(input, output, session) {
                  height = 200*486/421)
       }, deleteFile = F)
       
+      # tab panel text
       output$biogeo_title <- renderText({paste0("What lives near ", input$location, ", and where else does it live?")})
       output$bioclim_title <- renderText({paste0("What climates do ", input$location, " habitats occupy, locally and regionally?
                                                  Locally, is climate change introducing climates novel to these habitats?")})
       output$geoclim_title <- renderText({paste0("With climate change, how are climates analogous to ", input$location, "\'s migrating across space?")})
+      
       
       circle <- reactive({
             location <- input$location
@@ -276,8 +264,8 @@ shinyServer(function(input, output, session) {
                   scale_alpha_discrete(range=c(1, .5), guide="none") +
                   scale_x_continuous(expand=c(.1,0)) +
                   scale_y_continuous(expand=c(.1,0)) +
-                  labs(x=translate("bio1", "words"), 
-                       y=paste("log", translate("bio12", "words"))) +
+                  labs(x="mean annual temperature", 
+                       y=paste("log total annual precipitation")) +
                   theme_minimal() +
                   theme(legend.position="bottom", legend.direction="vertical")
             
@@ -294,7 +282,7 @@ shinyServer(function(input, output, session) {
             ext <- c(range(basemap$data$lon), range(basemap$data$lat))
             
             
-            f <- d %>% #d_regional() %>%
+            f <- d %>% 
                   dplyr::select(x, y, elevation, bio1_1980:bio12_2050) %>%
                   filter(x>=ext[1], x<=ext[2],
                          y>=ext[3], y<=ext[4]) %>%
@@ -366,6 +354,7 @@ shinyServer(function(input, output, session) {
                   labs(y="relative land area", fill="time period", color="time period")
             
             grid.draw(arrangeGrob(latlong, elev, nrow=1, widths=c(2, 1)))
+            
             
       })
       
