@@ -1,15 +1,20 @@
 library(shiny)
 
+
+
 shinyUI(navbarPage("BGC",
                    
-                   tags$style(type="text/css",
-                              ".shiny-output-error { visibility: hidden; }",
-                              ".shiny-output-error:before { visibility: hidden; }"
-                   ),
+                   #title=div(img(src="logo.png")),
+                   
                    
                    
                    tabPanel("Intro",
-                            imageOutput('logo', height="250px"),
+                            tags$style(type="text/css",
+                                       ".shiny-output-error { visibility: hidden; }",
+                                       ".shiny-output-error:before { visibility: hidden; }"
+                            ),
+                            img(src="logo.png"),
+                            #imageOutput('logo', height="250px"),
                             textInput("location", "Location", "Googleable name (in lower 48)"),
                             br(),
                             h2(p("Biogeoclim displays relationships between biotic, geographic, and climatic patterns in light of recent and projected climate change.")),

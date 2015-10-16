@@ -32,12 +32,12 @@ boundaries <- map_data("state")
 
 shinyServer(function(input, output, session) {
       
-      output$logo <- renderImage({
-            list(src = "data/logo.png",
-                 contentType = 'image/png',
-                 width = 200,
-                 height = 200*486/421)
-      }, deleteFile = F)
+      #output$logo <- renderImage({
+      #      list(src = "data/logo.png",
+      #           contentType = 'image/png',
+      #           width = 200,
+      #           height = 200*486/421)
+      #}, deleteFile = F)
       
       # tab panel text
       output$biogeo_title <- renderText({paste0("What lives near ", input$location, ", and where else does it live?")})
