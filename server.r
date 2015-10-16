@@ -1,17 +1,11 @@
 
-library(shiny)
 
-library(rgdal)
-library(raster)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(ggmap)
-library(gridExtra)
-library(grid)
 
-#install.packages(c("shiny", "rgdal", "raster", "dplyr", "tidyr", "ggplot2", "ggmap", "gridExtra", "grid", "sampSurf", "sp", "FNN"))
-# sampSurf, sp, FNN
+# install and load required packages
+packages <- c("shiny", "rgdal", "raster", "dplyr", "tidyr", "ggplot2", "ggmap", "gridExtra", "grid", "sampSurf", "sp", "FNN")
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(packages, update=T)
+
 
 
 # load data
@@ -283,6 +277,7 @@ shinyServer(function(input, output, session) {
             
             
             f <- d %>% 
+                  filter(classname != "Open Water") %>%
                   dplyr::select(x, y, elevation, bio1_1980:bio12_2050) %>%
                   filter(x>=ext[1], x<=ext[2],
                          y>=ext[3], y<=ext[4]) %>%
