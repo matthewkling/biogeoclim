@@ -12,7 +12,7 @@ shinyUI(fluidPage(
                    ),
                    
                    imageOutput('logo', height="250px"),
-                   textInput("location", "Location", "Googleable name (or lat, long)"),
+                   textInput("location", "Location", "Googleable name (in lower 48)"),
                    numericInput('radius', 'Search radius (km)', 25, step=5, min=5),
                    selectInput("comparison", "Vegetation hierarchy comparison", c("horizontal", "vertical")),
                    hr(),
@@ -32,20 +32,18 @@ shinyUI(fluidPage(
                                  br(),
                                  h4(p("Climatic differences drive much of the geographic variation in the ecosystems around us. As these climates change, local species and habitats must either adapt to the new climate, migrate to stay within their baseline climate envelope, or be extripated. While the science of predicting future biogeographic responses to climate change is highly complex and uncertain, biogeoclim aims to help illuminate the underlying qualitative relationships between the dimensions of these systems."))
                         ),
-                        tabPanel("Biogeography",
+                        tabPanel("Biotic",
                                  br(),
-                                 h2(textOutput("biogeo_title")),
+                                 h3(textOutput("biogeo_title")),
                                  br(),
-                                 plotOutput('biogeo', height="500px")), 
-                        tabPanel("Bioclimatography",
+                                 plotOutput('biogeo', height="500px"),
+                                 h3(textOutput("bioclim_title")),
                                  br(),
-                                 h2(textOutput("bioclim_title")),
+                                 plotOutput('bioclim', height="700px"),
+                                 numericInput('prob', 'Probability contour', .90, step=.01, min=.25, max=.99)), 
+                        tabPanel("Abiotic",
                                  br(),
-                                 numericInput('prob', 'Probability contour', .90, step=.01, min=.25, max=.99), 
-                                 plotOutput('bioclim', height="700px")), 
-                        tabPanel("Climatogeography",
-                                 br(),
-                                 h2(textOutput("geoclim_title")),
+                                 h3(textOutput("geoclim_title")),
                                  br(),
                                  fluidRow(
                                        column(4, sliderInput('zoom', 'Zoom', 8, step=1, min=4, max=12)),
@@ -58,9 +56,5 @@ shinyUI(fluidPage(
                         
             )
             
-            
-            #h1(textOutput('title')),
-            #plotOutput('biogeo', height="500px"),
-            #plotOutput('bioclim', height="600px")
       )
 ))
