@@ -24,7 +24,7 @@ boundaries <- map_data("state")
 shinyServer(function(input, output, session) {
       
       location <- reactive({
-            if(input$location == "Location (Googleable name, lower 48)"){return("Telluride")
+            if(input$location == "Location (Googleable name in US48)"){return("Telluride")
             }else{return(input$location)}
       })
       

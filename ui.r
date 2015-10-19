@@ -5,7 +5,7 @@ shinyUI(fluidPage(
       br(),
       fluidRow(
             column(9, h1("EPHEMERA")),
-            column(3, textInput("location", " ", "Enter a location (Googleable name in lower 48)"))
+            column(3, textInput("location", " ", "Location (Googleable name in US48)"))
       ),
       
       navbarPage(" ",
@@ -15,7 +15,7 @@ shinyUI(fluidPage(
                                      ".shiny-output-error:before { visibility: hidden; }"
                           ),
                           
-                          textOutput("intro_description"),
+                          h4(textOutput("intro_description")),
                           br(),
                           br(),
                           p("created by Matthew Kling")
@@ -76,7 +76,8 @@ shinyUI(fluidPage(
                                        wellPanel(
                                              br(),
                                              sliderInput('radius', 'Search radius (km)', min=10, max=100, value=25, step=5),
-                                             numericInput('prob', 'Probability contour', .90, step=.01, min=.25, max=.99),
+                                             sliderInput('prob', 'Probability contour', min=.5, max=.99, value=.90, step=.01, ),
+                                             #numericInput('prob', 'Probability contour', .90, step=.01, min=.25, max=.99),
                                              hr(),
                                              uiOutput("localtypes"),
                                              br(),
