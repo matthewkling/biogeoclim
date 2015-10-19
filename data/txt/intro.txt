@@ -1,8 +1,1 @@
-
-
-This app explores ways of visualizing climate and climate change across space and time.
-
-This is a beta version, so 
-
-
-All climate data are from Climate North America (), 
+Ephemera explores ways of visualizing climate variation across space and time. To get started, type the name of your location (e.g. a town, park, or restoration site) in the box in the upper corner. Processing times may be slow, so be patient. This app is a location-centered tool aimed at helping users understand climate change in a place of interest, by placing that change in the context of geographic climate variation. Change across three time periods (mid-20th century, recent, and projected mid-21st century) compares future projected change to observed trends during recent decades of anthropogenic climate change. Climate data are from Climate North America (http://tinyurl.com/ClimateNA), and represent the average projections of 8 global circulation models under the RCP 4.5 emissios scenario. Vegetation data are from the Current Extent dataset available from LANDFIRE (http://www.landfire.gov). All these data are the result of models and contain uncertainty.

@@ -26,9 +26,6 @@ paea <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=
 boundaries <- map_data("state")
 
 
-#input <- list(location="Meeker Park, CO", comparison="horizontal", zoom=10, radius=25, prob=.9, basemap="terrain", radius_regional=150, neighbors=.05)
-#input <- list(location="telluride", comparison="vertical", radius=25, prob=.9)
-
 shinyServer(function(input, output, session) {
       
       # tab panel text
@@ -36,10 +33,15 @@ shinyServer(function(input, output, session) {
             if(input$location == "Enter a location (Googleable name in lower 48)"){return("Telluride")
             }else{return(input$location)}
       })
-      output$biogeo_title <- renderText({paste0("What lives near ", location(), ", and where else does it live?")})
+      
+      output$biogeo_title <- renderText({paste0("What lives near ", location(), ", and where else does it live? How does local climate change align with the climate envelopes of these habitats?")})
       output$bioclim_title <- renderText({paste0("What climates are these habitat types known to tolerate, and how does local climate change compare?")})
       output$analogs_title <- renderText({paste0("How is ", location(), "'s prototypical climate migrating across space?")})
       output$seasons_title <- renderText({paste0("How is the seasonality of ", location(), "'s climate changing?")})
+      
+      output$analogs_description <- renderText(txt$analogs)
+      output$seasons_description <- renderText(txt$seasons)
+      output$biotic_description <- renderText(txt$biotic)
       
       
       circle <- reactive({
@@ -81,16 +83,9 @@ shinyServer(function(input, output, session) {
       output$localtypes <- renderUI({
             classes <- as.character(na.omit(unique(d_local()$classname)))
             title <- paste("Select from vegetation types within", input$radius, "km of", location())
+            return(checkboxGroupInput("classes_selected", title, classes, selected=classes[1:4]))
             
-            if(input$comparison=="horizontal"){
-                  return(checkboxGroupInput("classes_selected", title, classes, selected=classes[1:4]))
-            }
-            if(input$comparison=="vertical"){
-                  radioButtons("classes_selected", title, classes, selected=classes[1])
-            }
       })
-      #input$classes_selected <- d_local$classname[1:4]
-      
       
       
       
@@ -110,31 +105,10 @@ shinyServer(function(input, output, session) {
                   x + c(-b, b)
             }
             
-            if(input$comparison=="horizontal"){
                   f <- d %>%
                         dplyr::select(x, y, classname) %>%
                         filter(classname %in% input$classes_selected)
-            }
             
-            if(input$comparison=="vertical"){
-                  d_type <- d_local() %>%
-                        select(classname, evt_order, evt_sbcls) %>%
-                        filter(classname %in% input$classes_selected) %>%
-                        distinct() %>%
-                        mutate_each(funs(as.character))
-                  f <- d %>%
-                        dplyr::select(x, y, classname, evt_order, evt_sbcls) %>%
-                        filter(evt_order %in% d_type$evt_order) %>%
-                        gather(level, name, classname, evt_order, evt_sbcls) %>%
-                        filter(name %in% d_type[1,]) %>%
-                        mutate(classname = name) %>%
-                        mutate(level = as.integer(factor(level, levels=c("classname", "evt_sbcls", "evt_order")))) %>%
-                        arrange(x, y, level) %>%
-                        group_by(x, y) %>%
-                        slice(1) %>%
-                        ungroup() %>%
-                        mutate(classname = paste0(level, ": ", name))
-            }
             
             
             regional_map <- ggplot() + 
@@ -173,40 +147,11 @@ shinyServer(function(input, output, session) {
       ######################  BIO-CLIM #####################
       
       output$bioclim <- renderPlot({
-            if(input$comparison=="horizontal"){
                   f <- d %>%
                         dplyr::select(x, y, classname, bio1_1980, bio12_1980) %>%
                         filter(classname %in% input$classes_selected) %>%
                         mutate(bio12_1980 = log10(bio12_1980))
                   names(f) <- gsub("_1980", "", names(f))
-            }
-            
-            if(input$comparison=="vertical"){
-                  d_type <- d_local() %>%
-                        select(classname, evt_order, evt_sbcls) %>%
-                        filter(classname %in% input$classes_selected) %>%
-                        distinct() %>%
-                        mutate_each(funs(as.character))
-                  f <- d %>%
-                        dplyr::select(x, y, classname, evt_order, evt_sbcls, bio1_1980, bio12_1980) %>%
-                        filter(evt_order %in% d_type$evt_order) %>%
-                        gather(level, name, classname, evt_order, evt_sbcls) %>%
-                        filter(name %in% d_type[1,]) %>%
-                        mutate(classname = name) %>%
-                        mutate(level = as.integer(factor(level, levels=c("classname", "evt_sbcls", "evt_order")))) %>%
-                        arrange(x, y, level) %>%
-                        group_by(x, y) %>%
-                        slice(1) %>% # retain only the most detailed level for each pixel
-                        ungroup() %>%
-                        mutate(classname = paste0(level, ": ", name),
-                               bio12_1980=log10(bio12_1980))
-                  names(f) <- sub("_1980", "", names(f))
-                  f <- f %>%
-                        split(f$classname) %>%
-                        lapply(function(x) sample_n(x, min(nrow(x), 1000))) %>%
-                        do.call("rbind", .)
-            }
-            
             
             # build contours
             contourLevel <- function(x, y, prob = 0.95){
@@ -226,7 +171,6 @@ shinyServer(function(input, output, session) {
             }
             levels <- sapply(unique(f$classname), getlevel)
             alph <- .2
-            if(input$comparison=="vertical") alph <- .05
             contours_baseline_national <- mapply(function(df, b) stat_density2d(data=df, 
                                                                                 aes(x=bio1, y=bio12, color=classname, fill=classname), 
                                                                                 breaks=b, geom="polygon", alpha=alph, size=.1, na.rm=T), 
@@ -247,7 +191,7 @@ shinyServer(function(input, output, session) {
                          year=sub("2050", "2041.2070", year)) %>%
                   spread(variable, value) %>%
                   mutate(bio12=log10(bio12))
-            if(input$comparison=="vertical") d_point$classname <- paste0("1: ", d_point$classname)
+            #if(input$comparison=="vertical") d_point$classname <- paste0("1: ", d_point$classname)
             
             d_segment <- d_point %>%
                   gather(variable, value, bio1, bio12) %>%
@@ -371,8 +315,6 @@ shinyServer(function(input, output, session) {
             })
       
       
-      output$analogs_description <- renderText(txt$analogs)
-      output$seasons_description <- renderText(txt$seasons)
       
       
       
@@ -437,7 +379,7 @@ shinyServer(function(input, output, session) {
                   scale_color_manual(values=c("blue", "limegreen", "red"), drop=F) +
                   theme_minimal() +
                   theme(legend.position="right") +
-                  scale_y_log10(breaks=c(1, 1.5,3,5, 10,15,30,50,100,150,300,500,1000,1500,3000)) +
+                  #scale_y_log10(breaks=c(1, 1.5,3,5, 10,15,30,50,100,150,300,500,1000,1500,3000)) +
                   labs(x="mean monthly temperature (deg c)", 
                        y="total monthly precipitation (mm, log scale)")
       })
