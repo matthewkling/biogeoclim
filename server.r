@@ -296,7 +296,10 @@ shinyServer(function(input, output, session) {
                         theme_minimal() +
                         theme(legend.position="top", legend.direction="vertical",
                               axis.text.x=element_blank(), axis.ticks.x=element_blank()) +
-                        labs(y="relative land area", fill="time period", color="time period")
+                        labs(y="relative land area",
+                             x="elevation (m)",
+                             fill="time period", 
+                             color="time period")
                   
                   grid.draw(arrangeGrob(latlong, elev, nrow=1, widths=c(2, 1)))
             })
@@ -361,7 +364,7 @@ shinyServer(function(input, output, session) {
                   theme(legend.position="right") +
                   #scale_y_log10(breaks=c(1, 1.5,3,5, 10,15,30,50,100,150,300,500,1000,1500,3000)) +
                   labs(x="mean monthly temperature (deg c)", 
-                       y="total monthly precipitation (mm, log scale)")
+                       y="total monthly precipitation (mm)")
       })
 })
 
