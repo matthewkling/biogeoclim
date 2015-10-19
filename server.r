@@ -7,41 +7,36 @@ pacman::p_load("shiny", "rgdal", "raster", "dplyr", "tidyr",
                "sampSurf", "sp", "FNN", 
                update=T)
 
-
-
 # load data
 d <- readRDS("data/pixels.rds")
 valid_types <- readRDS("data/types.rds")
 m <- stack(list.files(recursive=T, pattern=".grd"))
-
 txtf <- list.files("data/txt")
 txt <- lapply(paste0("data/txt/", txtf), readLines)
 names(txt) <- sub(".txt", "", txtf)
 
-# coordinate systems
+# some spatial setup
 pll <- CRS("+proj=longlat +ellps=WGS84")
 paea <- CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
-
-# state boundaries
 boundaries <- map_data("state")
 
 
 shinyServer(function(input, output, session) {
       
-      # tab panel text
       location <- reactive({
-            if(input$location == "Enter a location (Googleable name in lower 48)"){return("Telluride")
+            if(input$location == "Location (Googleable name, lower 48)"){return("Telluride")
             }else{return(input$location)}
       })
+      
+      output$analogs_description <- renderText(txt$analogs)
+      output$seasons_description <- renderText(txt$seasons)
+      output$biotic_description <- renderText(txt$biotic)
+      output$intro_description <- renderText(txt$intro)
       
       output$biogeo_title <- renderText({paste0("What lives near ", location(), ", and where else does it live? How does local climate change align with the climate envelopes of these habitats?")})
       output$bioclim_title <- renderText({paste0("What climates are these habitat types known to tolerate, and how does local climate change compare?")})
       output$analogs_title <- renderText({paste0("How is ", location(), "'s prototypical climate migrating across space?")})
       output$seasons_title <- renderText({paste0("How is the seasonality of ", location(), "'s climate changing?")})
-      
-      output$analogs_description <- renderText(txt$analogs)
-      output$seasons_description <- renderText(txt$seasons)
-      output$biotic_description <- renderText(txt$biotic)
       
       
       circle <- reactive({
@@ -90,7 +85,7 @@ shinyServer(function(input, output, session) {
       
       
       
-      ############## biogeo ###############
+      ############## biogeography ###############
       
       output$biogeo <- renderPlot({
             
@@ -108,8 +103,6 @@ shinyServer(function(input, output, session) {
                   f <- d %>%
                         dplyr::select(x, y, classname) %>%
                         filter(classname %in% input$classes_selected)
-            
-            
             
             regional_map <- ggplot() + 
                   geom_raster(data=f, aes(x, y, fill=classname), size=.6, shape=15) +
@@ -144,7 +137,7 @@ shinyServer(function(input, output, session) {
       
       
       
-      ######################  BIO-CLIM #####################
+      ######################  bioclimatology  #####################
       
       output$bioclim <- renderPlot({
                   f <- d %>%
@@ -176,9 +169,6 @@ shinyServer(function(input, output, session) {
                                                                                 breaks=b, geom="polygon", alpha=alph, size=.1, na.rm=T), 
                                                  plyr::dlply(f, plyr::.(classname)), levels)
             
-            
-            
-            
             # point and segment data
             d_point <- d_local() %>%
                   filter(classname %in% input$classes_selected) %>%
@@ -191,7 +181,6 @@ shinyServer(function(input, output, session) {
                          year=sub("2050", "2041.2070", year)) %>%
                   spread(variable, value) %>%
                   mutate(bio12=log10(bio12))
-            #if(input$comparison=="vertical") d_point$classname <- paste0("1: ", d_point$classname)
             
             d_segment <- d_point %>%
                   gather(variable, value, bio1, bio12) %>%
@@ -218,7 +207,7 @@ shinyServer(function(input, output, session) {
             
       })
       
-      ############## analogs ###############
+      ######################## analogs ######################
       
       output$analogs <- renderPlot({
                   
@@ -285,8 +274,6 @@ shinyServer(function(input, output, session) {
                   dc <- fortify(circle()$spCircle)
                   dp <- as.data.frame(circle()$location)
                   
-                  
-                  
                   latlong <- basemap +
                         geom_raster(data=fn[fn$year=="1948.1980",], 
                                     aes(x, y), fill="blue", alpha=.4) +
@@ -315,11 +302,7 @@ shinyServer(function(input, output, session) {
             })
       
       
-      
-      
-      
-      
-      ############ seasons #############
+      #####################  seasons  ####################
       
       output$seasonal <- renderPlot({
             
@@ -359,12 +342,9 @@ shinyServer(function(input, output, session) {
             names(k) <- c("month", "ppt1", "ppt2", "tmean1", "tmean2")
             
             w <- md %>%
-                  #filter(year=="1981.2012") %>%
                   group_by(month) %>%
                   summarize(tmean=mean(tmean), 
                             ppt=mean(ppt))
-            
-            
             
             ggplot(md) + 
                   geom_segment(data=k, aes(x=tmean1, xend=tmean2, 
@@ -383,6 +363,5 @@ shinyServer(function(input, output, session) {
                   labs(x="mean monthly temperature (deg c)", 
                        y="total monthly precipitation (mm, log scale)")
       })
-      
 })
 

@@ -4,23 +4,24 @@ shinyUI(fluidPage(
       
       br(),
       fluidRow(
-            column(9, h1("toposcope")),
+            column(9, h1("EPHEMERA")),
             column(3, textInput("location", " ", "Enter a location (Googleable name in lower 48)"))
       ),
       
       navbarPage(" ",
-                 tabPanel("Intro",
+                 tabPanel("intro",
                           tags$style(type="text/css",
                                      ".shiny-output-error { visibility: hidden; }",
                                      ".shiny-output-error:before { visibility: hidden; }"
                           ),
                           
-                          textOutput(),
-                          
+                          textOutput("intro_description"),
+                          br(),
+                          br(),
                           p("created by Matthew Kling")
                  ),
                  
-                 tabPanel("Abiotic",
+                 tabPanel("abiotic",
                           br(),
                           fluidRow(
                                 column(3, 
@@ -66,7 +67,7 @@ shinyUI(fluidPage(
                           
                  ),
                  
-                 tabPanel("Biotic",
+                 tabPanel("biotic",
                           
                           br(),
                           fluidRow(
@@ -75,7 +76,6 @@ shinyUI(fluidPage(
                                        wellPanel(
                                              br(),
                                              sliderInput('radius', 'Search radius (km)', min=10, max=100, value=25, step=5),
-                                             #selectInput("comparison", "Vegetation hierarchy comparison", c("horizontal", "vertical")),
                                              numericInput('prob', 'Probability contour', .90, step=.01, min=.25, max=.99),
                                              hr(),
                                              uiOutput("localtypes"),
@@ -91,17 +91,8 @@ shinyUI(fluidPage(
                           conditionalPanel("input.biotic_info == true", textOutput("biotic_description")),
                           br()
                           
-                          
-                          
-                          
                  )
       )
-      
-      
-      
-      
-      
-      
 ))
 
 
