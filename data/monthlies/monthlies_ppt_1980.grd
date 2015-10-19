@@ -1,0 +1,25 @@
+[general]
+creator=R package 'raster'
+created=2015-10-18 21:04:23
+[georeference]
+nrows=615
+ncols=975
+xmin=-139.052200612
+ymin=14.5061552772393
+xmax=-66.9221511258262
+ymax=60.003571107
+projection=+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0
+[data]
+datatype=FLT8S
+byteorder=little
+nbands=12
+bandorder=BIL
+minvalue=-3982.2:-3977.2625:-3989.01875:-3976.05625:-3961.725:-3956.76875:-3971.9125:-3963.81875:-3928.325:-3958.325:-3978.975:-3984.9125
+maxvalue=1061.2825:792.74625:731.4725:503.27375:534.84375:729.16375:844.30125:768.875:1015.6625:1151.21875:1196.86875:957.16125
+nodatavalue=-1.7e+308
+[legend]
+legendtype=
+values=
+color=
+[description]
+layername=ppt_1980_01:ppt_1980_02:ppt_1980_03:ppt_1980_04:ppt_1980_05:ppt_1980_06:ppt_1980_07:ppt_1980_08:ppt_1980_09:ppt_1980_10:ppt_1980_11:ppt_1980_12

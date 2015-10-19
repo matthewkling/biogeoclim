@@ -1,0 +1,25 @@
+[general]
+creator=R package 'raster'
+created=2015-10-18 21:04:39
+[georeference]
+nrows=615
+ncols=975
+xmin=-139.052200612
+ymin=14.5061552772393
+xmax=-66.9221511258262
+ymax=60.003571107
+projection=+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0
+[data]
+datatype=FLT8S
+byteorder=little
+nbands=12
+bandorder=BIL
+minvalue=-25.2905:-23.5225:-18.384:-12.6125:-8.44:-4.4025:-1.355:-1.59:-5.4:-10.505:-14.4575:-20.3995
+maxvalue=29.8403846153846:30.3990384615385:31.8865:33.682:34.9805:37.058:41.089:39.854:34.8625:31.7065:30.8360294117647:30.2925
+nodatavalue=-1.7e+308
+[legend]
+legendtype=
+values=
+color=
+[description]
+layername=tmean_2050_01:tmean_2050_02:tmean_2050_03:tmean_2050_04:tmean_2050_05:tmean_2050_06:tmean_2050_07:tmean_2050_08:tmean_2050_09:tmean_2050_10:tmean_2050_11:tmean_2050_12
